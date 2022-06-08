@@ -1,0 +1,170 @@
+"use strict";
+let prompt = require("prompt-sync")()
+let fs = require("fs"); // permite a criação de arquivo
+const { encode } = require("punycode");
+// . Implemente um programa que cadastre um array de objetos em um arquivo em formato
+// JSON. Chame este arquivo de palavras.json. Cada objeto tem 2 campos:
+// ○ Um campo palavra; e // ○ Um campo “dica”. Essa dica é uma descrição genérica da palavra, que será usada
+// em um jogo de forca, que será implementado no exercício 2.
+// Juntamente com esta avaliação há um código ofuscado que implementa este programa
+// (ex1_obfus.js). Use este programa para entender todas as funcionalidades. Em síntese,
+// você deve desenvolver um programa equivalente ao programa implementado no código
+// ofuscado.
+// Seu programa deve implementar as seguintes funcionalidades:
+// a. Inserir uma nova palavra no array de palavras. *****OK*****
+// Os acentos da palavra devem ser substituídos pelas letras correspondentes sem acentos. A palavra deve ser armazenada
+// apenas com letras minúsculas. O campo dica não precisa ser alterado em relação ao que o usuário digitar.******OK******
+// Não podem ser cadastradas palavras repetidas. O arquivo deve ser atualizado a cada nova palavra inserida. ******OK******
+// b. Mostrar todas as palavras cadastradas. ******OK******
+// c. Remover uma palavra cadastrada. ******OK*****
+// A pesquisa pela palavra a ser removida deve aceitar a  palavra escrita de qualquer jeito. Desta forma, a busca pela palavra deve considerar que
+// as palavras foram cadastradas conforme o disposto no exercício 1a. O arquivo deve ser
+// atualizado a cada palavra removida.******OK*******
+// DICA: Crie o arquivo palavras.json inicial com o conteúdo “[ ]” (sem as aspas).
+
+
+let palavras2 = []
+
+// let p2 = fs.writeFileSync('palavras2.JSON',JSON.stringify(palavras2, null,3))
+
+// str = String(str)
+
+// console.log(str)
+
+function menu(){
+  let opcao = ""
+  do{
+    console.log("========== Menu de opções =========== \n")
+    console.log("=== 1 - Cadastro de palavras ======== ")
+    console.log("=== 2 - Consulta de palavras ======== ")
+    console.log("=== 3 - Remover palavras     ======== ")
+    console.log("=== 4 - Mostrar todos        ======== ")
+    console.log("=== 0 - Encerrar !!!         ========\n")
+    console.log("===================================== \n")
+    opcao = prompt ('=== Selecione a opção === ')
+    switch(opcao){
+      case "1": 
+        cadastrar_palavras()
+        break
+      case "2": 
+        consultar_palavras()
+        break
+      case "3": 
+        remover_palavras()
+        break
+      case "4": 
+        mostrar_tudo()
+        break
+      case "0": 
+        console.log("=== Menu encerrado !! ===")
+        break
+      default:
+        console.log('=== Opção Invalida ! ===')
+    }
+    console.log()
+  }while (opcao != 0)
+}
+
+
+function carregar_dados(){
+  let str = fs.readFileSync('palavras2.JSON')
+  return str = JSON.parse(str)
+  
+}
+
+function salvar_dados(){
+  let str = JSON.stringify(contatos,null,3)
+  fs.writeFileSync('palavras2.JSON',str)
+}
+
+function cadastrar_palavras(){
+  let palavra = ""
+  let dica = ""
+
+  
+  while(palavra == ""){
+    palavra = prompt('Digite uma palavra : ')
+  }
+  
+  for (const p of contatos) {
+
+        if (p['palavra'] == palavra) {
+            console.log("=== Palavra já existe !!! ===");
+            return;
+        }
+  }  
+  while(dica == ""){
+    dica = prompt('Digite uma dica da palavra anterior: ')
+  }
+
+  contatos.push({palavra: palavra.toLowerCase(), dica: dica.toLowerCase()})
+  console.log (`Palavra: ${palavra} e a Dica : ${dica}, foram cadastras ! `)
+  salvar_dados();
+}
+
+
+
+function mostrar_tudo(){
+ 
+  let str = fs.readFileSync('palavras2.JSON')  
+  str = JSON.parse(str)
+  console.log(str)
+  
+}
+
+function consultar_palavras(){
+  let palavra = ""
+  while (palavra == ""){
+    palavra = prompt("=== Digite a palavra para consulta : === ")
+  }
+
+    let encontrou  = contatos.filter((contato) => contato['palavra'] == palavra.toLowerCase())
+    if(encontrou.legth == 0){
+      console.log("Palavra não encontrada ! ")
+    }
+    else{
+      if(encontrou == 1){
+        console.log(`=== Palavra não encontrada === `)
+      
+    
+      }else{
+        console.log(`Palavra encontrada !!! `)
+          for(let p of encontrou){
+        
+        // console.log(`${p} Palavras`)
+        console.log(p)
+      }
+    }
+  }
+  
+}
+
+function remover_palavras(){
+ let palavra = ""
+  while (palavra == ""){
+    palavra = prompt("=== Digite a palavra ser removida : === ")
+  }
+  let existe = contatos.length
+  contatos = contatos.filter((contato) => contato['palavra'] !== palavra)
+  if(existe != contatos.length){
+    console.log(`=== Palavra ${palavra } removida !!` )
+    salvar_dados()
+  }else{
+    console.log("=== Palavra não encontrada !!! ===")
+  }
+  
+}
+
+
+
+function somente_letras() {
+    this.value = this.value.replace(/[^\w\.]|\d/g, '');
+};
+
+
+
+let contatos = carregar_dados();
+menu();
+
+// console.log(contatos) 
+
